@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang=en>
+<head>
+<meta charset=UTF-8>
+<title>🌀</title>
+<style>body,html{margin:0;padding:0;background:#0c0c0c;color:#fff;font-family:system-ui,sans-serif;height:100%;overflow:hidden}.center-container{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;z-index:1}#clock{font-size:180px;font-weight:700;margin-bottom:50px}#stopwatch{font-size:80px;font-weight:700;background:#111;padding:24px 48px;border-radius:20px;box-shadow:0 0 30px rgba(0,0,0,.4);display:inline-block}.buttons{margin-top:20px}.buttons button{font-size:20px;margin:0 10px;padding:10px 24px;background:#222;border:none;border-radius:8px;color:#fff;cursor:pointer}.buttons button:hover{background:#333}.history{position:absolute;bottom:0;left:0;right:0;max-height:35%;overflow-y:auto;font-size:16px;padding:10px 20px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.15) transparent}.history::-webkit-scrollbar{width:8px}.history::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:6px}.history::-webkit-scrollbar-track{background:0 0}.history-entry{color:#ccc;font-family:monospace;margin-bottom:2px}.top-bar{position:absolute;top:10px;left:10px;font-family:monospace;background:#1c1c1c;padding:6px 10px;border-radius:5px;font-size:14px;display:flex;align-items:center;gap:10px}.fullscreen-btn{position:absolute;top:10px;right:10px;background:#1c1c1c;color:#888;font-size:14px;border:none;padding:5px 10px;border-radius:6px;cursor:pointer}.fullscreen-btn.active{color:#0f0}.hidden-ui{opacity:0;transition:opacity .4s}.visible-ui{opacity:1;transition:opacity .4s}</style>
+</head>
+<body>
+<div class="top-bar visible-ui" id=topBar>
+<span id=totalTime>Total: 00:00:00</span>
+<button onclick=resetTotal() style="background:#333;color:#fff;border:none;padding:2px 8px;border-radius:4px;font-size:12px">Reset</button>
+</div>
+<button class="fullscreen-btn visible-ui" id=fullscreenBtn onclick=toggleFullscreen()>⛶</button>
+<div class=center-container>
+<div id=clock>--:--</div>
+<div id=stopwatch>00:00:00</div>
+<div class="buttons visible-ui" id=controls>
+<button onclick=startStop()>Start</button>
+<button onclick=stopTimer()>Pause</button>
+</div>
+</div>
+<div class="history visible-ui" id=historyLog></div>
+<script>function updateClock(){const e=new Date;let t=e.getHours(),n=e.getMinutes();0===t?t=12:t>12&&(t-=12),document.getElementById("clock").textContent=t+":"+String(n).padStart(2,"0")}setInterval(updateClock,1e3),updateClock();let interval,running=!1,startTime=0,elapsed=0,totalSeconds=0;function format(e){return`${String(Math.floor(e/3600)).padStart(2,"0")}:${String(Math.floor(e%3600/60)).padStart(2,"0")}:${String(e%60).padStart(2,"0")}`}function updateStopwatch(){let e=Date.now();elapsed=Math.floor((e-startTime)/1e3),document.getElementById("stopwatch").textContent=format(elapsed)}function startStop(){running||(running=!0,startTime=Date.now()-1e3*elapsed,interval=setInterval(updateStopwatch,200))}function stopTimer(){if(running){if(clearInterval(interval),running=!1,elapsed>0){const e=document.createElement("div");e.className="history-entry",e.textContent=`+ ${format(elapsed)}`,document.getElementById("historyLog").appendChild(e),totalSeconds+=elapsed,document.getElementById("totalTime").textContent=`Total: ${format(totalSeconds)}`}elapsed=0,document.getElementById("stopwatch").textContent="00:00:00"}}function resetTotal(){document.getElementById("historyLog").innerHTML="",totalSeconds=0,document.getElementById("totalTime").textContent="Total: 00:00:00"}function toggleFullscreen(){const e=document.getElementById("fullscreenBtn");document.fullscreenElement?(document.exitFullscreen(),e.classList.remove("active")):(document.documentElement.requestFullscreen(),e.classList.add("active"))}let hideTimeout,uiElements=[document.getElementById("controls"),document.getElementById("historyLog"),document.getElementById("topBar"),document.getElementById("fullscreenBtn")];function resetTimer(){uiElements.forEach((e=>e.classList.remove("hidden-ui"))),uiElements.forEach((e=>e.classList.add("visible-ui"))),clearTimeout(hideTimeout),hideTimeout=setTimeout((()=>{uiElements.forEach((e=>e.classList.remove("visible-ui"))),uiElements.forEach((e=>e.classList.add("hidden-ui")))}),5e3)}document.addEventListener("mousemove",resetTimer),document.addEventListener("touchstart",resetTimer),resetTimer()</script>
+</body>
+</html>
